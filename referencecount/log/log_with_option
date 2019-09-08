@@ -1,0 +1,33 @@
+[  +2.202706] ------------[ cut here ]------------
+[  +0.000001] refcount_t: saturated; leaking memory.
+[  +0.000041] WARNING: CPU: 0 PID: 11778 at lib/refcount.c:133 refcount_inc_not_zero_checked+0x44/0x60
+[  +0.000000] Modules linked in: sys_referencecount(OE) sys_sgdebugging(OE) sg sr_mod cdrom sd_mod crc32c_intel ata_generic pata_acpi floppy ata_piix libata mptspi scsi_transport_spi mptscsih mptbase autofs4 [last unloaded: sys_referencecount]
+[  +0.000009] CPU: 0 PID: 11778 Comm: user_referencec Tainted: G           OE     4.20.6+ #3
+[  +0.000001] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  +0.000002] RIP: 0010:refcount_inc_not_zero_checked+0x44/0x60
+[  +0.000001] Code: ff 74 09 b8 01 00 00 00 c3 31 c0 c3 80 3d 54 ab bb 00 00 75 ee 48 c7 c7 60 a4 be b7 31 c0 c6 05 42 ab bb 00 01 e8 bc b5 d6 ff <0f> 0b eb d5 85 c0 74 d7 89 c2 83 c2 01 75 ba eb c8 90 66 2e 0f 1f
+[  +0.000001] RSP: 0018:ffffb748c085fec0 EFLAGS: 00010282
+[  +0.000001] RAX: 0000000000000000 RBX: ffffb748c085ff58 RCX: 0000000000000006
+[  +0.000001] RDX: 0000000000000000 RSI: 0000000000000092 RDI: ffff9cfd7ba154f0
+[  +0.000000] RBP: 0000000000000155 R08: 0000000000000038 R09: 00000000000191f4
+[  +0.000001] R10: ffffffffb82be264 R11: 0000000000000417 R12: 0000000000000000
+[  +0.000001] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[  +0.000062] FS:  00007fc3af036740(0000) GS:ffff9cfd7ba00000(0000) knlGS:0000000000000000
+[  +0.000006] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  +0.000001] CR2: 00007fc3aee1a290 CR3: 000000013a35c006 CR4: 00000000000606f0
+[  +0.000031] Call Trace:
+[  +0.000003]  refcount_inc_checked+0x5/0x30
+[  +0.000005]  referencecount+0x30/0x4c [sys_referencecount]
+[  +0.000012]  do_syscall_64+0x7b/0x37d
+[  +0.000008]  ? do_page_fault+0x37/0x12e
+[  +0.000014]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  +0.000002] RIP: 0033:0x7fc3aeb4a1c9
+[  +0.000001] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  +0.000000] RSP: 002b:00007ffc7cc3da18 EFLAGS: 00000206 ORIG_RAX: 0000000000000155
+[  +0.000001] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fc3aeb4a1c9
+[  +0.000001] RDX: 0000000000400680 RSI: 00007ffc7cc3db38 RDI: 00007ffc7cc3da30
+[  +0.000001] RBP: 00007ffc7cc3da40 R08: 0000000000000000 R09: 00007ffc7cc3db28
+[  +0.000000] R10: 00007fc3aee19e80 R11: 0000000000000206 R12: 0000000000400510
+[  +0.000001] R13: 00007ffc7cc3db20 R14: 0000000000000000 R15: 0000000000000000
+[  +0.000001] ---[ end trace b93c94fbc6222981 ]---
+

@@ -1,0 +1,50 @@
+[  +0.000718] installed poison module!
+[ +13.522585] Use after free bug Poisson overwritten
+[  +4.003207] Writes:  Total: 73720935  Max/Min: 0/0   Fail: 0
+[May 9 21:17] general protection fault: 0000 [#1] SMP PTI
+[  +0.000301] CPU: 1 PID: 4057 Comm: pickup Tainted: G           O      4.20.6+ #20
+[  +0.000262] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  +0.000352] RIP: 0010:__kmalloc+0xa0/0x260
+[  +0.000161] Code: 00 00 00 49 8b 09 65 48 8b 51 08 65 48 03 0d 5f 3f 65 4c 4c 8b 21 4d 85 e4 0f 84 49 01 00 00 41 8b 41 20 48 8d 4a 01 4d 8b 01 <49> 8b 1c 04 4c 89 e0 65 49 0f c7 08 0f 94 c0 84 c0 74 c6 41 8b 41
+[  +0.000571] RSP: 0018:ffffb357c07f7bd0 EFLAGS: 00010206
+[  +0.000191] RAX: 0000000000000000 RBX: 00000000006080c0 RCX: 0000000000001e3a
+[  +0.000321] RDX: 0000000000001e39 RSI: 00000000006080c0 RDI: ffffa1ebfac036c0
+[  +0.000272] RBP: 00000000006080c0 R08: 00000000001f4ec0 R09: ffffa1ebfac036c0
+[  +0.000244] R10: ffffa1ebf6946ce8 R11: 0000000000000000 R12: 676e696b63656863
+[  +0.000252] R13: 0000000000000033 R14: ffffa1ebfac036c0 R15: ffffffffb3a4cda1
+[  +0.000294] FS:  00007f30ae772880(0000) GS:ffffa1ebfba00000(0000) knlGS:0000000000000000
+[  +0.000290] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  +0.000269] CR2: 00007f13e6f78000 CR3: 0000000138e22004 CR4: 00000000000606e0
+[  +0.000445] Call Trace:
+[  +0.000224]  ext4_htree_store_dirent+0x31/0x110
+[  +0.000189]  htree_dirblock_to_tree+0xca/0x1d0
+[  +0.000181]  ext4_htree_fill_tree+0xa6/0x2f0
+[  +0.000227]  ? ext4_readdir+0x741/0x860
+[  +0.000198]  ? rcu_read_lock_sched_held+0x57/0x60
+[  +0.000192]  ? kmem_cache_alloc_trace+0x12b/0x220
+[  +0.000193]  ext4_readdir+0x4ac/0x860
+[  +0.000163]  ? iterate_dir+0x51/0x190
+[  +0.000207]  iterate_dir+0x8f/0x190
+[  +0.000214]  __x64_sys_getdents+0xa3/0x140
+[  +0.000226]  ? fillonedir+0xe0/0xe0
+[  +0.000203]  do_syscall_64+0x80/0x465
+[  +0.000206]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  +0.000264]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  +0.000289] RIP: 0033:0x7f30ac2b3855
+[  +0.000224] Code: 83 c7 13 e9 4d b7 fc ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 41 56 48 63 ff b8 4e 00 00 00 41 55 41 54 55 53 48 89 f3 0f 05 <48> 3d 00 f0 ff ff 77 55 4c 8d 2c 03 49 89 c6 4c 39 eb 73 3d 0f 1f
+[  +0.000854] RSP: 002b:00007ffc50763850 EFLAGS: 00000246 ORIG_RAX: 000000000000004e
+[  +0.000280] RAX: ffffffffffffffda RBX: 000055c604b108a0 RCX: 00007f30ac2b3855
+[  +0.000282] RDX: 0000000000008000 RSI: 000055c604b108a0 RDI: 000000000000000c
+[  +0.000255] RBP: 000055c604b108a0 R08: 0000000000000040 R09: 0000000000008030
+[  +0.000253] R10: 0000000000000076 R11: 0000000000000246 R12: ffffffffffffff70
+[  +0.000257] R13: 0000000000000000 R14: 00007ffc50763918 R15: 00007ffc50763928
+[  +0.000277] Modules linked in: sys_poison(O) sg sd_mod sr_mod cdrom crc32c_intel floppy ata_generic pata_acpi ata_piix mptspi scsi_transport_spi mptscsih mptbase libata autofs4
+[  +0.000604] ---[ end trace c08022630fbc068e ]---
+[  +0.000190] RIP: 0010:__kmalloc+0xa0/0x260
+[  +0.000196] Code: 00 00 00 49 8b 09 65 48 8b 51 08 65 48 03 0d 5f 3f 65 4c 4c 8b 21 4d 85 e4 0f 84 49 01 00 00 41 8b 41 20 48 8d 4a 01 4d 8b 01 <49> 8b 1c 04 4c 89 e0 65 49 0f c7 08 0f 94 c0 84 c0 74 c6 41 8b 41
+[  +0.000642] RSP: 0018:ffffb357c07f7bd0 EFLAGS: 00010206
+[  +0.000204] RAX: 0000000000000000 RBX: 00000000006080c0 RCX: 0000000000001e3a
+[  +0.000276] RDX: 0000000000001e39 RSI: 00000000006080c0 RDI: ffffa1ebfac036c0
+[  +0.000252] RBP: 00000000006080c0 R08: 00000000001f4ec0 R09: ffffa1ebfac036c0
+[  +0.000278] R10: ffffa1ebf6946ce8 R11: 0000000000000000 R12: 676e696b63656863
+[  +0.000310] R13: 0000000000000033 R14: ffffa1ebfac036c0 R15: ffffffffb3a4cda1

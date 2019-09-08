@@ -1,0 +1,35 @@
+[  142.913975] sys_linkedlist: loading out-of-tree module taints kernel.
+[  142.915271] installed linkedlist module!
+[  147.315994] Inside linkedlist
+[  147.316005] ------------[ cut here ]------------
+[  147.316009] list_del corruption, ffff9d6ef2ef38e8->next is LIST_POISON1 (dead000000000100)
+[  147.316089] WARNING: CPU: 1 PID: 5220 at lib/list_debug.c:47 __list_del_entry_valid+0x50/0xa0
+[  147.316091] Modules linked in: sys_linkedlist(O) sg sr_mod cdrom sd_mod crc32c_intel floppy ata_generic pata_acpi ata_piix mptspi scsi_transport_spi libata mptscsih mptbase autofs4
+[  147.316107] CPU: 1 PID: 5220 Comm: user_linkedlist Tainted: G           O      4.20.6+ #30
+[  147.316109] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  147.316113] RIP: 0010:__list_del_entry_valid+0x50/0xa0
+[  147.316116] Code: 8b 12 48 39 d7 75 3e 48 8b 50 08 48 39 d7 75 1f b8 01 00 00 00 c3 48 89 c2 48 89 fe 31 c0 48 c7 c7 08 77 1f bc e8 80 67 d3 ff <0f> 0b 31 c0 c3 48 89 fe 31 c0 48 c7 c7 b8 77 1f bc e8 6a 67 d3 ff
+[  147.316118] RSP: 0018:ffffb8af00c0fea8 EFLAGS: 00010286
+[  147.316120] RAX: 0000000000000000 RBX: ffff9d6ef2ef38e8 RCX: 0000000000000006
+[  147.316122] RDX: 0000000000000000 RSI: ffffffffbc4430b8 RDI: ffff9d6efbb156d0
+[  147.316124] RBP: ffffb8af00c0feb0 R08: 0000000000000000 R09: ffff9d6ef2e95d60
+[  147.316126] R10: 0000000000000000 R11: 0000000000000418 R12: 0000000000000000
+[  147.316127] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[  147.316179] FS:  00007f37e1a48740(0000) GS:ffff9d6efbb00000(0000) knlGS:0000000000000000
+[  147.316192] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  147.316194] CR2: 00007f37e155c1b0 CR3: 0000000135872003 CR4: 00000000000606e0
+[  147.316233] Call Trace:
+[  147.316246]  corrupted_linkedlist+0x9b/0xf0 [sys_linkedlist]
+[  147.316251]  linkedlist+0x13/0x16 [sys_linkedlist]
+[  147.316255]  do_syscall_64+0x7b/0x3a7
+[  147.316262]  ? do_page_fault+0x37/0x17d
+[  147.316268]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  147.316271] RIP: 0033:0x7f37e155c1c9
+[  147.316273] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  147.316275] RSP: 002b:00007ffe71319608 EFLAGS: 00000202 ORIG_RAX: 0000000000000151
+[  147.316278] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f37e155c1c9
+[  147.316280] RDX: 0000000000400640 RSI: 00007ffe71319738 RDI: 00007ffe71319620
+[  147.316282] RBP: 00007ffe71319640 R08: 0000000000000000 R09: 00007ffe71319728
+[  147.316284] R10: 00007f37e182be80 R11: 0000000000000202 R12: 00000000004004d0
+[  147.316286] R13: 00007ffe71319720 R14: 0000000000000000 R15: 0000000000000000
+[  147.316289] ---[ end trace b5a3653d42c5a175 ]---

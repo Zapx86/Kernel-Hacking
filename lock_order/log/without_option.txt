@@ -1,0 +1,33 @@
+[ 6626.853696] removed lockorder module!
+[ 6626.860623] installed lockorder module!
+[ 6635.626860] user_lockorder[13614]: segfault at 7f3b9aa5f290 ip 00007f3b9aa5f290 sp 00007fff85e27048 error 14 in libc-2.17.so[7f3b9aa0c000+1c2000]
+[ 6635.626963] Code: Bad RIP value.
+[ 6635.626970] BUG: sleeping function called from invalid context at ./include/linux/freezer.h:57
+[ 6635.627336] in_atomic(): 1, irqs_disabled(): 0, pid: 13614, name: user_lockorder
+[ 6635.627578] CPU: 1 PID: 13614 Comm: user_lockorder Tainted: G        W  O      4.20.6+ #35
+[ 6635.627579] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[ 6635.627589] Call Trace:
+[ 6635.627625]  dump_stack+0x46/0x5b
+[ 6635.627633]  ___might_sleep+0xe1/0x100
+[ 6635.627638]  get_signal+0x61/0x680
+[ 6635.627644]  ? wake_up_klogd+0x32/0x40
+[ 6635.627648]  ? vprintk_emit+0x1d4/0x250
+[ 6635.627651]  ? try_to_wake_up+0x1d0/0x430
+[ 6635.627657]  do_signal+0x31/0x5d0
+[ 6635.627660]  ? signal_wake_up_state+0x10/0x20
+[ 6635.627663]  ? __send_signal+0x12f/0x530
+[ 6635.627665]  ? show_opcodes+0x5e/0xa0
+[ 6635.627668]  ? force_sig_info+0xc3/0xd0
+[ 6635.627673]  exit_to_usermode_loop+0x41/0x8f
+[ 6635.627679]  ? page_fault+0x8/0x30
+[ 6635.627681]  prepare_exit_to_usermode+0x84/0x90
+[ 6635.627685]  retint_user+0x8/0x8
+[ 6635.627690] RIP: 0033:0x7f3b9aa5f290
+[ 6635.627695] Code: Bad RIP value.
+[ 6635.627697] RSP: 002b:00007fff85e27048 EFLAGS: 00010206
+[ 6635.627700] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007f3b9ab041c9
+[ 6635.627702] RDX: 0000000000400640 RSI: 0000000000000000 RDI: 00000000004006d0
+[ 6635.627703] RBP: 00007fff85e27080 R08: 0000000000000000 R09: 00007fff85e27168
+[ 6635.627705] R10: 00007fff85e26aa0 R11: 00007f3b9aa5f290 R12: 00000000004004d0
+[ 6635.627707] R13: 00007fff85e27160 R14: 0000000000000000 R15: 0000000000000000
+[ 6635.627785] note: user_lockorder[13614] exited with preempt_count 1

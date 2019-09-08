@@ -1,0 +1,42 @@
+[  240.877480] BUG: sleeping function called from invalid context at mm/slab.h:421
+[  240.877846] in_atomic(): 1, irqs_disabled(): 0, pid: 4888, name: user_atomic
+[  240.878071] CPU: 1 PID: 4888 Comm: user_atomic Tainted: G           O      4.20.6+ #25
+[  240.878072] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  240.878074] Call Trace:
+[  240.878088]  dump_stack+0x46/0x5b
+[  240.878095]  ___might_sleep+0xe1/0x100
+[  240.878100]  kmem_cache_alloc_trace+0xfb/0x1d0
+[  240.878107]  atomic+0x2c/0x76 [sys_atomic]
+[  240.878111]  do_syscall_64+0x7b/0x38d
+[  240.878119]  ? do_page_fault+0x37/0x143
+[  240.878124]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  240.878128] RIP: 0033:0x7ff8e908b1c9
+[  240.878131] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  240.878140] RSP: 002b:00007fff48930fe8 EFLAGS: 00000206 ORIG_RAX: 0000000000000160
+[  240.878143] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff8e908b1c9
+[  240.878145] RDX: 0000000000400640 RSI: 00007fff48931118 RDI: 00007fff48931000
+[  240.878147] RBP: 00007fff48931020 R08: 0000000000000000 R09: 00007fff48931108
+[  240.878149] R10: 00007ff8e935ae80 R11: 0000000000000206 R12: 00000000004004d0
+[  240.878150] R13: 00007fff48931100 R14: 0000000000000000 R15: 0000000000000000
+[  240.878202] spin lock atomicity corruption 1 and pointer 00000000cfb428f8
+[  242.069325] BUG: sleeping function called from invalid context at mm/slab.h:421
+[  242.069423] in_atomic(): 1, irqs_disabled(): 0, pid: 4888, name: user_atomic
+[  242.069508] CPU: 1 PID: 4888 Comm: user_atomic Tainted: G        W  O      4.20.6+ #25
+[  242.069509] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  242.069510] Call Trace:
+[  242.069518]  dump_stack+0x46/0x5b
+[  242.069522]  ___might_sleep+0xe1/0x100
+[  242.069524]  kmem_cache_alloc_trace+0xfb/0x1d0
+[  242.069528]  atomic+0x2c/0x76 [sys_atomic]
+[  242.069530]  do_syscall_64+0x7b/0x38d
+[  242.069534]  ? do_page_fault+0x37/0x143
+[  242.069537]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  242.069539] RIP: 0033:0x7ff8e908b1c9
+[  242.069540] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  242.069541] RSP: 002b:00007fff48930fe8 EFLAGS: 00000206 ORIG_RAX: 0000000000000160
+[  242.069543] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff8e908b1c9
+[  242.069543] RDX: 0000000000400640 RSI: 00007fff48931118 RDI: 00007fff48931000
+[  242.069544] RBP: 00007fff48931020 R08: 0000000000000000 R09: 00007fff48931108
+[  242.069545] R10: 00007ff8e935ae80 R11: 0000000000000206 R12: 00000000004004d0
+[  242.069545] R13: 00007fff48931100 R14: 0000000000000000 R15: 0000000000000000
+[  242.069548] spin lock atomicity corruption 0 and pointer 00000000cfb428f8

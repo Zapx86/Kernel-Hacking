@@ -1,0 +1,10 @@
+arch/powerpc/configs/ppc6xx_defconfig
+arch/m68k/configs/stmark2_defconfig
+arch/s390/configs/debug_defconfig
+Documentation/vm/slub.rst
+include/generated/autoconf.h
+include/config/auto.conf
+lib/Kconfig.debug
+mm/mempool.c
+mm/slub.c
+mm/dmapool.c

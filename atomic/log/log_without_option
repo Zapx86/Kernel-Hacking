@@ -1,0 +1,2 @@
+[  751.047744] spin lock atomicity corruption 1 and pointer 00000000ba15d69b
+[  752.048006] spin lock atomicity corruption 0 and pointer 00000000ba15d69b

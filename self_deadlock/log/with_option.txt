@@ -1,0 +1,172 @@
+[  219.680646] spin_self_deadlock: loading out-of-tree module taints kernel.
+[  219.681723] Enter Module: Self Deadlock - Spinlock
+
+[  219.681916] ============================================
+[  219.682102] WARNING: possible recursive locking detected
+[  219.682291] 4.20.6+ #6 Tainted: G           O     
+[  219.682461] --------------------------------------------
+[  219.682652] insmod/4595 is trying to acquire lock:
+[  219.682826] 000000009ecead2d (){+.+.}, at: init_mod+0x26/0x1000 [spin_self_deadlock]
+[  219.683093] 
+but task is already holding lock:
+[  219.683290] 000000009ecead2d (){+.+.}, at: init_mod+0x1a/0x1000 [spin_self_deadlock]
+[  219.683546] 
+other info that might help us debug this:
+[  219.683773]  Possible unsafe locking scenario:
+
+[  219.683977]        CPU0
+[  219.684087]        ----
+[  219.684282]   lock();
+[  219.684434]   lock();
+[  219.684602] 
+ *** DEADLOCK ***
+
+[  219.684828]  May be due to missing lock nesting notation
+
+[  219.685071] 1 lock held by insmod/4595:
+[  219.685227]  #0: 000000009ecead2d (){+.+.}, at: init_mod+0x1a/0x1000 [spin_self_deadlock]
+[  219.685551] 
+stack backtrace:
+[  219.685730] CPU: 1 PID: 4595 Comm: insmod Tainted: G           O      4.20.6+ #6
+[  219.685992] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  219.686344] Call Trace:
+[  219.686469]  dump_stack+0x5e/0x8b
+[  219.686618]  __lock_acquire+0x4f3/0x1b00
+[  219.686781]  ? __down_trylock_console_sem+0x62/0x80
+[  219.686971]  ? irq_work_queue+0x6e/0x80
+[  219.687130]  lock_acquire+0xcc/0x1d0
+[  219.687282]  ? init_mod+0x26/0x1000 [spin_self_deadlock]
+[  219.687483]  _raw_spin_lock+0x34/0x70
+[  219.687638]  ? init_mod+0x26/0x1000 [spin_self_deadlock]
+[  219.687834]  ? 0xffffffffc0253000
+[  219.687981]  init_mod+0x26/0x1000 [spin_self_deadlock]
+[  219.688178]  do_one_initcall+0x68/0x2f0
+[  219.688345]  ? do_init_module+0x1d/0x1e8
+[  219.688509]  ? rcu_read_lock_sched_held+0x8f/0xa0
+[  219.688692]  ? kmem_cache_alloc_trace+0x193/0x2a0
+[  219.688873]  do_init_module+0x55/0x1e8
+[  219.689029]  load_module+0x1c5d/0x2500
+[  219.689185]  ? find_symbol_in_section+0xa0/0xa0
+[  219.689364]  __se_sys_finit_module+0xb3/0xc0
+[  219.689534]  do_syscall_64+0x80/0x485
+[  219.689687]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  219.689870]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  219.690060] RIP: 0033:0x7f5ed63651c9
+[  219.690210] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  219.690814] RSP: 002b:00007ffd636c1398 EFLAGS: 00000202 ORIG_RAX: 0000000000000139
+[  219.691085] RAX: ffffffffffffffda RBX: 00000000022b9240 RCX: 00007f5ed63651c9
+[  219.691341] RDX: 0000000000000000 RSI: 000000000041a94e RDI: 0000000000000003
+[  219.691590] RBP: 000000000041a94e R08: 0000000000000000 R09: 00007ffd636c1538
+[  219.691837] R10: 0000000000000003 R11: 0000000000000202 R12: 0000000000000000
+[  219.692085] R13: 00000000022b91e0 R14: 0000000000000000 R15: 0000000000000000
+[  284.693511] rcu: INFO: rcu_sched self-detected stall on CPU
+[  284.693615] rcu: 	1-....: (64897 ticks this GP) idle=02a/1/0x4000000000000002 softirq=31816/31816 fqs=16217 
+[  284.693752] rcu: 	 (t=65001 jiffies g=36621 q=578)
+[  284.693829] NMI backtrace for cpu 1
+[  284.693890] CPU: 1 PID: 4595 Comm: insmod Tainted: G           O      4.20.6+ #6
+[  284.693998] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  284.694143] Call Trace:
+[  284.694195]  <IRQ>
+[  284.694244]  dump_stack+0x5e/0x8b
+[  284.694306]  nmi_cpu_backtrace+0x94/0xa0
+[  284.694379]  ? lapic_can_unplug_cpu+0xa0/0xa0
+[  284.694451]  nmi_trigger_cpumask_backtrace+0xa5/0xe0
+[  284.694530]  rcu_dump_cpu_stacks+0x8f/0xc7
+[  284.694598]  rcu_check_callbacks+0x607/0x820
+[  284.694669]  ? tick_sched_do_timer+0x80/0x80
+[  284.694738]  update_process_times+0x23/0x50
+[  284.694806]  tick_sched_timer+0x32/0x70
+[  284.694871]  __hrtimer_run_queues+0x11a/0x470
+[  284.694941]  hrtimer_interrupt+0x11d/0x270
+[  284.695009]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  284.695084]  smp_apic_timer_interrupt+0x82/0x250
+[  284.695157]  apic_timer_interrupt+0xf/0x20
+[  284.695224]  </IRQ>
+[  284.695271] RIP: 0010:queued_spin_lock_slowpath+0x21/0x1c0
+[  284.695367] Code: 90 90 90 90 90 90 90 90 90 8b 05 3a 14 f7 00 85 c0 7e 19 ba 01 00 00 00 8b 07 85 c0 75 0a f0 0f b1 17 85 c0 75 f2 f3 c3 f3 90 <eb> ec 81 fe 00 01 00 00 0f 84 3a 01 00 00 81 e6 00 ff ff ff 75 3e
+[  284.695619] RSP: 0018:ffffbb15407f3c38 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+[  284.695730] RAX: 0000000000000001 RBX: ffffffffc0244000 RCX: 0000000000000006
+[  284.695830] RDX: 0000000000000001 RSI: 0000000000000001 RDI: ffffffffc0244000
+[  284.695930] RBP: ffffffffc0244018 R08: 0000000000000000 R09: 0000000000000000
+[  284.696031] R10: 0000000000000001 R11: 0000000000000002 R12: ffffffffc02440d0
+[  284.696131] R13: 0000000000000000 R14: ffffa327f6d286c8 R15: ffffbb15407f3e40
+[  284.696243]  do_raw_spin_lock+0x6b/0x90
+[  284.696309]  _raw_spin_lock+0x55/0x70
+[  284.696374]  ? init_mod+0x26/0x1000 [spin_self_deadlock]
+[  284.696464]  ? 0xffffffffc0253000
+[  284.696521]  init_mod+0x26/0x1000 [spin_self_deadlock]
+[  284.696598]  do_one_initcall+0x68/0x2f0
+[  284.696662]  ? do_init_module+0x1d/0x1e8
+[  284.696728]  ? rcu_read_lock_sched_held+0x8f/0xa0
+[  284.696802]  ? kmem_cache_alloc_trace+0x193/0x2a0
+[  284.696874]  do_init_module+0x55/0x1e8
+[  284.696937]  load_module+0x1c5d/0x2500
+[  284.696999]  ? find_symbol_in_section+0xa0/0xa0
+[  284.697069]  __se_sys_finit_module+0xb3/0xc0
+[  284.697137]  do_syscall_64+0x80/0x485
+[  284.697198]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  284.697270]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  284.697358] RIP: 0033:0x7f5ed63651c9
+[  284.697420] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  284.697659] RSP: 002b:00007ffd636c1398 EFLAGS: 00000202 ORIG_RAX: 0000000000000139
+[  284.697769] RAX: ffffffffffffffda RBX: 00000000022b9240 RCX: 00007f5ed63651c9
+[  284.697869] RDX: 0000000000000000 RSI: 000000000041a94e RDI: 0000000000000003
+[  284.697969] RBP: 000000000041a94e R08: 0000000000000000 R09: 00007ffd636c1538
+[  284.698070] R10: 0000000000000003 R11: 0000000000000202 R12: 0000000000000000
+[  284.698170] R13: 00000000022b91e0 R14: 0000000000000000 R15: 0000000000000000
+[  479.696065] rcu: INFO: rcu_sched self-detected stall on CPU
+[  479.696191] rcu: 	1-....: (259895 ticks this GP) idle=02a/1/0x4000000000000002 softirq=31816/31816 fqs=64966 
+[  479.696327] rcu: 	 (t=260004 jiffies g=36621 q=998)
+[  479.696406] NMI backtrace for cpu 1
+[  479.696468] CPU: 1 PID: 4595 Comm: insmod Tainted: G           O      4.20.6+ #6
+[  479.696575] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  479.696720] Call Trace:
+[  479.696771]  <IRQ>
+[  479.696819]  dump_stack+0x5e/0x8b
+[  479.696890]  nmi_cpu_backtrace+0x94/0xa0
+[  479.696959]  ? lapic_can_unplug_cpu+0xa0/0xa0
+[  479.697028]  nmi_trigger_cpumask_backtrace+0xa5/0xe0
+[  479.697106]  rcu_dump_cpu_stacks+0x8f/0xc7
+[  479.697173]  rcu_check_callbacks+0x607/0x820
+[  479.697241]  ? tick_sched_do_timer+0x80/0x80
+[  479.697308]  update_process_times+0x23/0x50
+[  479.697375]  tick_sched_timer+0x32/0x70
+[  479.697437]  __hrtimer_run_queues+0x11a/0x470
+[  479.697505]  hrtimer_interrupt+0x11d/0x270
+[  479.697584]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  479.697659]  smp_apic_timer_interrupt+0x82/0x250
+[  479.697733]  apic_timer_interrupt+0xf/0x20
+[  479.697800]  </IRQ>
+[  479.697848] RIP: 0010:queued_spin_lock_slowpath+0x21/0x1c0
+[  479.697931] Code: 90 90 90 90 90 90 90 90 90 8b 05 3a 14 f7 00 85 c0 7e 19 ba 01 00 00 00 8b 07 85 c0 75 0a f0 0f b1 17 85 c0 75 f2 f3 c3 f3 90 <eb> ec 81 fe 00 01 00 00 0f 84 3a 01 00 00 81 e6 00 ff ff ff 75 3e
+[  479.698169] RSP: 0018:ffffbb15407f3c38 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+[  479.698278] RAX: 0000000000000001 RBX: ffffffffc0244000 RCX: 0000000000000006
+[  479.698382] RDX: 0000000000000001 RSI: 0000000000000001 RDI: ffffffffc0244000
+[  479.698483] RBP: ffffffffc0244018 R08: 0000000000000000 R09: 0000000000000000
+[  479.698584] R10: 0000000000000001 R11: 0000000000000002 R12: ffffffffc02440d0
+[  479.698684] R13: 0000000000000000 R14: ffffa327f6d286c8 R15: ffffbb15407f3e40
+[  479.698796]  do_raw_spin_lock+0x6b/0x90
+[  479.698862]  _raw_spin_lock+0x55/0x70
+[  479.698927]  ? init_mod+0x26/0x1000 [spin_self_deadlock]
+[  479.699008]  ? 0xffffffffc0253000
+[  479.699068]  init_mod+0x26/0x1000 [spin_self_deadlock]
+[  479.699148]  do_one_initcall+0x68/0x2f0
+[  479.699214]  ? do_init_module+0x1d/0x1e8
+[  479.699281]  ? rcu_read_lock_sched_held+0x8f/0xa0
+[  479.699356]  ? kmem_cache_alloc_trace+0x193/0x2a0
+[  479.699430]  do_init_module+0x55/0x1e8
+[  479.699493]  load_module+0x1c5d/0x2500
+[  479.699557]  ? find_symbol_in_section+0xa0/0xa0
+[  479.699629]  __se_sys_finit_module+0xb3/0xc0
+[  479.699698]  do_syscall_64+0x80/0x485
+[  479.699761]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  479.699835]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  479.699913] RIP: 0033:0x7f5ed63651c9
+[  479.699974] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  479.700212] RSP: 002b:00007ffd636c1398 EFLAGS: 00000202 ORIG_RAX: 0000000000000139
+[  479.700321] RAX: ffffffffffffffda RBX: 00000000022b9240 RCX: 00007f5ed63651c9
+[  479.700421] RDX: 0000000000000000 RSI: 000000000041a94e RDI: 0000000000000003
+[  479.700521] RBP: 000000000041a94e R08: 0000000000000000 R09: 00007ffd636c1538
+[  479.700621] R10: 0000000000000003 R11: 0000000000000202 R12: 0000000000000000
+[  479.700721] R13: 00000000022b91e0 R14: 0000000000000000 R15: 0000000000000000
+

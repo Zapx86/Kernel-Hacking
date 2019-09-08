@@ -1,0 +1,66 @@
+[  185.689610] Two threads created successfully
+[  185.689734] Inside function 1
+[  185.689737] Inside function 2
+
+[  190.734663] ======================================================
+[  190.734809] WARNING: possible circular locking dependency detected
+[  190.734957] 4.20.6+ #1 Tainted: G           OE
+[  190.735076] ------------------------------------------------------
+[  190.735222] thread1/4924 is trying to acquire lock:
+[  190.735344] 000000003cdf0b8d (lock_2){+.+.}, at: thread_function1+0x34/0x70 [sys_mutex]
+[  190.735538]
+but task is already holding lock:
+[  190.735675] 000000000061f264 (lock_1){+.+.}, at: thread_function1+0xe/0x70 [sys_mutex]
+[  190.735859]
+which lock already depends on the new lock.
+
+[  190.736038]
+the existing dependency chain (in reverse order) is:
+[  190.736205]
+-> #1 (lock_1){+.+.}:
+[  190.736426]        thread_function2+0x34/0x70 [sys_mutex]
+[  190.736619]        kthread+0xf3/0x130
+[  190.736730]        ret_from_fork+0x3a/0x50
+[  190.736843]
+-> #0 (lock_2){+.+.}:
+[  190.736975]        __mutex_lock+0x5c/0x830
+[  190.737088]        thread_function1+0x34/0x70 [sys_mutex]
+[  190.737226]        kthread+0xf3/0x130
+[  190.737331]        ret_from_fork+0x3a/0x50
+[  190.737442]
+other info that might help us debug this:
+
+[  190.737634]  Possible unsafe locking scenario:
+
+[  190.737783]        CPU0                    CPU1
+[  190.737902]        ----                    ----
+[  190.738021]   lock(lock_1);
+[  190.738109]                                lock(lock_2);
+[  190.738243]                                lock(lock_1);
+[  190.738377]   lock(lock_2);
+[  190.738464]
+ *** DEADLOCK ***
+
+[  190.738628] 1 lock held by thread1/4924:
+[  190.738766]  #0: 000000000061f264 (lock_1){+.+.}, at: thread_function1+0xe/0x70 [sys_mutex]
+[  190.738973]
+stack backtrace:
+[  190.739096] CPU: 1 PID: 4924 Comm: thread1 Tainted: G           OE     4.20.6+ #1
+[  190.739278] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  190.739523] Call Trace:
+[  190.739610]  dump_stack+0x5e/0x8b
+[  190.739719]  print_circular_bug.isra.32+0x28e/0x29b
+[  190.739851]  __lock_acquire+0x1807/0x1870
+[  190.739965]  ? lock_timer_base+0x62/0x80
+[  190.740075]  lock_acquire+0xb5/0x190
+[  190.740179]  ? thread_function1+0x34/0x70 [sys_mutex]
+[  190.740333]  __mutex_lock+0x5c/0x830
+[  190.740441]  ? thread_function1+0x34/0x70 [sys_mutex]
+[  190.740572]  ? schedule_timeout+0x1d9/0x480
+[  190.740687]  ? thread_function1+0x34/0x70 [sys_mutex]
+[  190.740819]  thread_function1+0x34/0x70 [sys_mutex]
+[  190.740947]  kthread+0xf3/0x130
+[  190.741043]  ? thread_function2+0x70/0x70 [sys_mutex]
+[  190.741174]  ? kthread_park+0x80/0x80
+[  190.741279]  ret_from_fork+0x3a/0x50
+

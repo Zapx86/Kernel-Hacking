@@ -1,0 +1,9 @@
+unreferenced object 0xffff9cfd74a77918 (size 8):
+  comm "user_memleaking", pid 14280, jiffies 4303963079 (age 139.685s)
+  hex dump (first 8 bytes):
+    20 79 a7 74 fd 9c ff ff                           y.t....
+  backtrace:
+    [<00000000b5ce0fd9>] do_syscall_64+0x7b/0x37d
+    [<00000000b7c47ea8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    [<00000000b0456f0e>] 0xffffffffffffffff
+

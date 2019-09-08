@@ -1,0 +1,79 @@
+[347045.992698] Accessing the freed memory for BUG_ON_DATA_CORRUPTION 
+[347045.992724] =============================================================================
+[347045.993071] BUG kmalloc-64 (Tainted: G    B      O     ): Object already free
+[347045.993347] -----------------------------------------------------------------------------
+
+[347045.993715] INFO: Allocated in poison+0x17/0x58 [sys_poison] age=0 cpu=0 pid=13989
+[347045.994058] 	kmem_cache_alloc_trace+0x196/0x230
+[347045.994249] 	poison+0x17/0x58 [sys_poison]
+[347045.994459] 	do_syscall_64+0x80/0x465
+[347045.994657] 	entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347045.994869] INFO: Freed in poison+0x22/0x58 [sys_poison] age=0 cpu=0 pid=13989
+[347045.995153] 	do_syscall_64+0x80/0x465
+[347045.995321] 	entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347045.995531] INFO: Slab 0x00000000b75c5a27 objects=20 used=15 fp=0x000000003e024cae flags=0x8000000000010201
+[347045.995890] INFO: Object 0x000000003e024cae @offset=6008 fp=0x          (null)
+
+[347045.996230] Redzone 000000005b3929f3: bb bb bb bb bb bb bb bb                          ........
+[347045.996551] Object 000000003e024cae: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[347045.996887] Object 000000001ab30c27: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[347045.997224] Object 00000000282c3686: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[347045.997562] Object 00000000f1e6220e: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  kkkkkkkkkkkkkkk.
+[347045.997906] Redzone 0000000094938e57: bb bb bb bb bb bb bb bb                          ........
+[347045.998232] Padding 0000000074b57cb6: 5a 5a 5a 5a 5a 5a 5a 5a                          ZZZZZZZZ
+[347045.998554] CPU: 0 PID: 13989 Comm: user_poison Tainted: G    B      O      4.20.6+ #19
+[347045.998557] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[347045.998559] Call Trace:
+[347045.998575]  dump_stack+0x5e/0x8b
+[347045.998587]  free_debug_processing+0x2e1/0x2fb
+[347045.998610]  ? __down_trylock_console_sem+0x62/0x80
+[347045.998615]  __slab_free+0x27e/0x3e0
+[347045.998620]  ? printk+0x53/0x6a
+[347045.998624]  ? poison+0x38/0x58 [sys_poison]
+[347045.998628]  poison+0x38/0x58 [sys_poison]
+[347045.998632]  do_syscall_64+0x80/0x465
+[347045.998636]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[347045.998640]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347045.998644] RIP: 0033:0x7f01bc6251c9
+[347045.998648] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[347045.998651] RSP: 002b:00007ffeecc554e8 EFLAGS: 00000206 ORIG_RAX: 000000000000015f
+[347045.998656] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f01bc6251c9
+[347045.998659] RDX: 0000000000400640 RSI: 00007ffeecc55618 RDI: 00007ffeecc55500
+[347045.998661] RBP: 00007ffeecc55520 R08: 0000000000000000 R09: 00007ffeecc55608
+[347045.998664] R10: 00007f01bc8f4e80 R11: 0000000000000206 R12: 00000000004004d0
+[347045.998666] R13: 00007ffeecc55600 R14: 0000000000000000 R15: 0000000000000000
+[347045.998714] FIX kmalloc-64: Object at 0x000000003e024cae not freed
+[347045.998953] Double freeing
+[347045.998954] Accessed the freed memory which is data corruption 
+[347045.999371] =============================================================================
+[347045.999691] BUG kmalloc-64 (Tainted: G    B      O     ): Wrong object count. Counter is 15 but counted were 19
+[347046.000049] -----------------------------------------------------------------------------
+
+[347046.000409] INFO: Slab 0x00000000b75c5a27 objects=20 used=15 fp=0x000000003e024cae flags=0x8000000000010201
+[347046.000759] CPU: 0 PID: 13989 Comm: user_poison Tainted: G    B      O      4.20.6+ #19
+[347046.000761] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[347046.000763] Call Trace:
+[347046.000769]  dump_stack+0x5e/0x8b
+[347046.000774]  slab_err+0xaf/0xe0
+[347046.000779]  on_freelist+0x19d/0x240
+[347046.000806]  ? put_files_struct+0x8f/0xb0
+[347046.000811]  free_debug_processing+0x88/0x2fb
+[347046.000815]  __slab_free+0x27e/0x3e0
+[347046.000820]  ? put_files_struct+0x8f/0xb0
+[347046.000825]  put_files_struct+0x8f/0xb0
+[347046.000842]  do_exit+0x2b2/0xb60
+[347046.000847]  do_group_exit+0x41/0xc0
+[347046.000852]  __x64_sys_exit_group+0xf/0x10
+[347046.000855]  do_syscall_64+0x80/0x465
+[347046.000859]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[347046.000864]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347046.000868] RIP: 0033:0x7f01bc5f21d9
+[347046.000877] Code: Bad RIP value.
+[347046.000879] RSP: 002b:00007ffeecc554e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+[347046.000883] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f01bc5f21d9
+[347046.000886] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[347046.000888] RBP: 00007f01bc8ef838 R08: 000000000000003c R09: 00000000000000e7
+[347046.000891] R10: ffffffffffffff70 R11: 0000000000000246 R12: 00007f01bc8ef838
+[347046.000894] R13: 00007f01bc8f4e80 R14: 0000000000000000 R15: 0000000000000000
+[347046.000898] FIX kmalloc-64: Object count adjusted.
+[347075.151591] Writes:  Total: 213268713238  Max/Min: 0/0   Fail: 0 

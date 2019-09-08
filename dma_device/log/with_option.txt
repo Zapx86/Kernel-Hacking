@@ -1,0 +1,40 @@
+[  300.944652] sys_dmadevice: loading out-of-tree module taints kernel.
+[  300.945447] installed dma device module!
+[  313.709656] ------------[ cut here ]------------
+[  313.709663]  mydevice: DMA-API: device driver tries to free an invalid DMA memory address
+[  313.709682] WARNING: CPU: 0 PID: 4893 at kernel/dma/debug.c:1089 check_unmap+0x753/0x8d0
+[  313.709685] Modules linked in: sys_dmadevice(O) sg sd_mod sr_mod cdrom crc32c_intel ata_generic pata_acpi floppy mptspi scsi_transport_spi mptscsih mptbase ata_piix libata autofs4
+[  313.709707] CPU: 0 PID: 4893 Comm: user_dmadevice Tainted: G           O      4.20.6+ #5
+[  313.709710] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  313.709715] RIP: 0010:check_unmap+0x753/0x8d0
+[  313.709719] Code: 73 01 00 00 48 8b 5f 50 48 85 db 0f 84 84 01 00 00 e8 f1 14 33 00 48 89 c6 48 89 da 48 c7 c7 b8 af fc a4 31 c0 e8 ed 40 f8 ff <0f> 0b 8b 15 f5 d3 ff 00 85 d2 75 13 8b 05 87 6a f6 00 85 c0 74 09
+[  313.709723] RSP: 0018:ffff8f154098fd98 EFLAGS: 00010282
+[  313.709727] RAX: 0000000000000000 RBX: ffff8a37b6bff430 RCX: 0000000000000006
+[  313.709730] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8a37bba156d0
+[  313.709733] RBP: ffff8f154098fdf0 R08: 0000000000000000 R09: 0000000000000000
+[  313.709736] R10: 0000000000000001 R11: 0000000000008185 R12: ffffffffa4e0c660
+[  313.709739] R13: ffffffffffffffff R14: 000075c900000000 R15: 0000000000000000
+[  313.709785] FS:  00007f5be3a8e740(0000) GS:ffff8a37bba00000(0000) knlGS:0000000000000000
+[  313.709801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  313.709805] CR2: 00007f5be3872290 CR3: 0000000138058001 CR4: 00000000000606f0
+[  313.709853] Call Trace:
+[  313.709861]  debug_dma_unmap_page+0x92/0xa0
+[  313.709871]  dmadevice+0x15e/0x1d0 [sys_dmadevice]
+[  313.709877]  do_syscall_64+0x80/0x465
+[  313.709882]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[  313.709889]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  313.709894] RIP: 0033:0x7f5be35a21c9
+[  313.709897] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  313.709901] RSP: 002b:00007ffdceb166d8 EFLAGS: 00000206 ORIG_RAX: 000000000000015d
+[  313.709910] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f5be35a21c9
+[  313.709913] RDX: 0000000000400640 RSI: 00007ffdceb16808 RDI: 00007ffdceb166f0
+[  313.709916] RBP: 00007ffdceb16710 R08: 0000000000000000 R09: 00007ffdceb167f8
+[  313.709919] R10: 00007f5be3871e80 R11: 0000000000000206 R12: 00000000004004d0
+[  313.709922] R13: 00007ffdceb167f0 R14: 0000000000000000 R15: 0000000000000000
+[  313.709926] irq event stamp: 1356
+[  313.709931] hardirqs last  enabled at (1355): [<ffffffffa42c712b>] console_unlock+0x3bb/0x5e0
+[  313.709936] hardirqs last disabled at (1356): [<ffffffffa4201960>] trace_hardirqs_off_thunk+0x1a/0x1c
+[  313.709940] softirqs last  enabled at (880): [<ffffffffa4c002a6>] __do_softirq+0x2a6/0x3de
+[  313.709947] softirqs last disabled at (871): [<ffffffffa426b1cd>] irq_exit+0xdd/0xf0
+[  313.709949] ---[ end trace 959f4fead1e89c4f ]---
+[  313.710092] releasing DMA device

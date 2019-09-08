@@ -1,0 +1,73 @@
+[  252.983464] sys_hung: loading out-of-tree module taints kernel.
+[  252.983993] installed hung module!
+[  299.728464] removed hung module!
+[  299.734830] installed hung module!
+[  313.430381] INFO: task user_hung:5659 blocked for more than 5 seconds.
+[  313.430612]       Tainted: G           O      4.20.6+ #34
+[  313.430788] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  313.431026] user_hung       D    0  5659   4122 0x00000000
+[  313.431031] Call Trace:
+[  313.431043]  ? __schedule+0x20d/0x620
+[  313.431047]  ? __handle_mm_fault+0xa45/0xc10
+[  313.431050]  schedule+0x34/0x80
+[  313.431055]  schedule_timeout+0x1af/0x420
+[  313.431060]  ? collect_expired_timers+0xa0/0xa0
+[  313.431063]  msleep+0x30/0x40
+[  313.431070]  hung+0xa/0xd [sys_hung]
+[  313.431075]  do_syscall_64+0x7b/0x38d
+[  313.431082]  ? do_page_fault+0x37/0x143
+[  313.431086]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  313.431090] RIP: 0033:0x7f59ed7d21c9
+[  313.431099] Code: Bad RIP value.
+[  313.431101] RSP: 002b:00007ffff70b1848 EFLAGS: 00000206 ORIG_RAX: 000000000000015a
+[  313.431104] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f59ed7d21c9
+[  313.431106] RDX: 0000000000400640 RSI: 00007ffff70b1978 RDI: 00007ffff70b1860
+[  313.431107] RBP: 00007ffff70b1880 R08: 0000000000000000 R09: 00007ffff70b1968
+[  313.431109] R10: 00007f59edaa1e80 R11: 0000000000000206 R12: 00000000004004d0
+[  313.431111] R13: 00007ffff70b1960 R14: 0000000000000000 R15: 0000000000000000
+[  318.550364] INFO: task user_hung:5659 blocked for more than 5 seconds.
+[  318.550591]       Tainted: G           O      4.20.6+ #34
+[  318.550768] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  318.551006] user_hung       D    0  5659   4122 0x00000000
+[  318.551011] Call Trace:
+[  318.551024]  ? __schedule+0x20d/0x620
+[  318.551028]  ? __handle_mm_fault+0xa45/0xc10
+[  318.551031]  schedule+0x34/0x80
+[  318.551036]  schedule_timeout+0x1af/0x420
+[  318.551041]  ? collect_expired_timers+0xa0/0xa0
+[  318.551044]  msleep+0x30/0x40
+[  318.551051]  hung+0xa/0xd [sys_hung]
+[  318.551056]  do_syscall_64+0x7b/0x38d
+[  318.551063]  ? do_page_fault+0x37/0x143
+[  318.551067]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  318.551071] RIP: 0033:0x7f59ed7d21c9
+[  318.551079] Code: Bad RIP value.
+[  318.551081] RSP: 002b:00007ffff70b1848 EFLAGS: 00000206 ORIG_RAX: 000000000000015a
+[  318.551084] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f59ed7d21c9
+[  318.551086] RDX: 0000000000400640 RSI: 00007ffff70b1978 RDI: 00007ffff70b1860
+[  318.551088] RBP: 00007ffff70b1880 R08: 0000000000000000 R09: 00007ffff70b1968
+[  318.551090] R10: 00007f59edaa1e80 R11: 0000000000000206 R12: 00000000004004d0
+[  318.551091] R13: 00007ffff70b1960 R14: 0000000000000000 R15: 0000000000000000
+[  323.670340] INFO: task user_hung:5659 blocked for more than 5 seconds.
+[  323.670567]       Tainted: G           O      4.20.6+ #34
+[  323.670743] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  323.671098] user_hung       D    0  5659   4122 0x00000000
+[  323.671102] Call Trace:
+[  323.671115]  ? __schedule+0x20d/0x620
+[  323.671120]  ? __handle_mm_fault+0xa45/0xc10
+[  323.671123]  schedule+0x34/0x80
+[  323.671128]  schedule_timeout+0x1af/0x420
+[  323.671133]  ? collect_expired_timers+0xa0/0xa0
+[  323.671136]  msleep+0x30/0x40
+[  323.671143]  hung+0xa/0xd [sys_hung]
+[  323.671147]  do_syscall_64+0x7b/0x38d
+[  323.671154]  ? do_page_fault+0x37/0x143
+[  323.671159]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  323.671162] RIP: 0033:0x7f59ed7d21c9
+[  323.671171] Code: Bad RIP value.
+[  323.671173] RSP: 002b:00007ffff70b1848 EFLAGS: 00000206 ORIG_RAX: 000000000000015a
+[  323.671176] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f59ed7d21c9
+[  323.671178] RDX: 0000000000400640 RSI: 00007ffff70b1978 RDI: 00007ffff70b1860
+[  323.671180] RBP: 00007ffff70b1880 R08: 0000000000000000 R09: 00007ffff70b1968
+[  323.671182] R10: 00007f59edaa1e80 R11: 0000000000000206 R12: 00000000004004d0
+[  323.671183] R13: 00007ffff70b1960 R14: 0000000000000000 R15: 0000000000000000

@@ -1,0 +1,35 @@
+[  587.323858] removed dma device module!
+[  587.330378] installed dma device module!
+[  592.089011] Initialized a new device
+[  592.089046] ------------[ cut here ]------------
+[  592.089047] Device 'mydevice' does not have a release() function, it is broken and must be fixed.
+[  592.089190] WARNING: CPU: 1 PID: 7850 at drivers/base/core.c:895 device_release+0x75/0x80
+[  592.089194] Modules linked in: sys_dmadevice(O) sg sd_mod sr_mod cdrom crc32c_intel ata_generic pata_acpi floppy ata_piix mptspi scsi_transport_spi mptscsih mptbase libata autofs4 [last unloaded: sys_dmadevice]
+[  592.089203] CPU: 1 PID: 7850 Comm: user_dmadevice Tainted: G        W  O      4.20.6+ #35
+[  592.089203] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  592.089208] RIP: 0010:device_release+0x75/0x80
+[  592.089209] Code: 83 90 02 00 00 48 85 c0 74 09 48 8b 40 40 48 85 c0 75 c5 48 8b 73 40 48 85 f6 74 12 48 c7 c7 08 d7 df 92 31 c0 e8 ab 31 ca ff <0f> 0b eb b2 48 8b 33 eb e9 66 90 48 8b 05 09 5e f7 00 53 48 89 fb
+[  592.089210] RSP: 0018:ffffa3788004bea0 EFLAGS: 00010286
+[  592.089211] RAX: 0000000000000000 RBX: ffffffffc041a370 RCX: 0000000000000006
+[  592.089212] RDX: 0000000000000000 RSI: 0000000000000096 RDI: ffff9eb2bbb154f0
+[  592.089212] RBP: ffffffffc041a360 R08: 0000000000000000 R09: ffffffff92544440
+[  592.089213] R10: 766564796d272065 R11: 656f642027656369 R12: ffff9eb2b6ce6480
+[  592.089214] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[  592.089241] FS:  00007f4a928a5740(0000) GS:ffff9eb2bbb00000(0000) knlGS:0000000000000000
+[  592.089248] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  592.089249] CR2: 00007f4a92689290 CR3: 00000001399da004 CR4: 00000000000606e0
+[  592.089268] Call Trace:
+[  592.089278]  kobject_put+0x52/0xa0
+[  592.089281]  dmadevice+0x106/0x109 [sys_dmadevice]
+[  592.089283]  do_syscall_64+0x7b/0x38d
+[  592.089287]  ? do_page_fault+0x37/0x143
+[  592.089290]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  592.089292] RIP: 0033:0x7f4a923b91c9
+[  592.089293] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 dc 2c 00 f7 d8 64 89 01 48
+[  592.089294] RSP: 002b:00007ffe7bd3f898 EFLAGS: 00000202 ORIG_RAX: 000000000000015d
+[  592.089295] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f4a923b91c9
+[  592.089295] RDX: 0000000000400640 RSI: 00007ffe7bd3f9c8 RDI: 00007ffe7bd3f8b0
+[  592.089296] RBP: 00007ffe7bd3f8d0 R08: 0000000000000000 R09: 00007ffe7bd3f9b8
+[  592.089297] R10: 00007f4a92688e80 R11: 0000000000000202 R12: 00000000004004d0
+[  592.089297] R13: 00007ffe7bd3f9b0 R14: 0000000000000000 R15: 0000000000000000
+[  592.089299] ---[ end trace efaaba232e91a537 ]---

@@ -1,0 +1,10 @@
+[ 3860.788245] sys_lockorder: loading out-of-tree module taints kernel.
+[ 3860.789418] installed lockorder module!
+
+[ 3877.066723] ================================================
+[ 3877.066928] WARNING: lock held when returning to user space!
+[ 3877.067140] 4.20.6+ #5 Tainted: G           O     
+[ 3877.067318] ------------------------------------------------
+[ 3877.067520] user_lockorder/9228 is leaving the kernel with locks still held!
+[ 3877.067763] 1 lock held by user_lockorder/9228:
+[ 3877.067944]  #0: 00000000f51da1ff (){+.+.}, at: lockorder+0xc/0xf [sys_lockorder]

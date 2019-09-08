@@ -1,0 +1,61 @@
+[347243.141393] Accessing the freed memory for BUG_ON_DATA_CORRUPTION 
+[347243.141397] Accessed the freed memory which is data corruption 
+[347243.142726] =============================================================================
+[347243.143098] BUG kmalloc-64 (Tainted: G    B      O     ): Poison overwritten
+[347243.143361] -----------------------------------------------------------------------------
+
+[347243.143723] INFO: 0x000000003e024cae-0x00000000f155f746. First byte 0x63 instead of 0x6b
+[347243.144033] INFO: Allocated in poison+0x7a/0xe7 [sys_poison] age=2 cpu=1 pid=14728
+[347243.144327] 	kmem_cache_alloc_trace+0x196/0x230
+[347243.144521] 	poison+0x7a/0xe7 [sys_poison]
+[347243.144701] 	do_syscall_64+0x80/0x465
+[347243.144884] 	entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347243.145096] INFO: Freed in poison+0x85/0xe7 [sys_poison] age=2 cpu=1 pid=14728
+[347243.145381] 	do_syscall_64+0x80/0x465
+[347243.145551] 	entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347243.145769] INFO: Slab 0x00000000b75c5a27 objects=20 used=20 fp=0x          (null) flags=0x8000000000010200
+[347243.146125] INFO: Object 0x000000003e024cae @offset=6008 fp=0x00000000362e4579
+
+[347243.146460] Redzone 000000005b3929f3: bb bb bb bb bb bb bb bb                          ........
+[347243.146780] Object 000000003e024cae: 63 68 65 63 6b 69 6e 67 20 74 68 65 20 64 61 74  checking the dat
+[347243.147118] Object 000000001ab30c27: 61 20 63 6f 72 72 75 70 74 69 6f 6e 00 6b 6b 6b  a corruption.kkk
+[347243.147456] Object 00000000282c3686: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[347243.147794] Object 00000000f1e6220e: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  kkkkkkkkkkkkkkk.
+[347243.148132] Redzone 0000000094938e57: bb bb bb bb bb bb bb bb                          ........
+[347243.148452] Padding 0000000074b57cb6: 5a 5a 5a 5a 5a 5a 5a 5a                          ZZZZZZZZ
+[347243.148780] CPU: 1 PID: 2003 Comm: systemd-journal Tainted: G    B      O      4.20.6+ #19
+[347243.148782] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[347243.148784] Call Trace:
+[347243.148792]  dump_stack+0x5e/0x8b
+[347243.148797]  check_bytes_and_report+0xbf/0x100
+[347243.148801]  check_object+0x21f/0x270
+[347243.148827]  ? inotify_handle_event+0x94/0x190
+[347243.148832]  alloc_debug_processing+0xa3/0x16b
+[347243.148837]  ___slab_alloc.constprop.82+0x36e/0x390
+[347243.148841]  ? inotify_handle_event+0x94/0x190
+[347243.148864]  ? warn_alloc+0x170/0x170
+[347243.148869]  ? inotify_handle_event+0x94/0x190
+[347243.148873]  ? inotify_handle_event+0x94/0x190
+[347243.148877]  __slab_alloc.constprop.81+0x2d/0x51
+[347243.148881]  __kmalloc+0x22c/0x270
+[347243.148886]  inotify_handle_event+0x94/0x190
+[347243.148891]  fsnotify+0x340/0x410
+[347243.148897]  __fsnotify_parent+0x101/0x110
+[347243.148904]  notify_change+0x276/0x400
+[347243.148910]  do_truncate+0x6d/0xb0
+[347243.148915]  do_sys_ftruncate+0xf6/0x160
+[347243.148919]  do_syscall_64+0x80/0x465
+[347243.148923]  ? trace_hardirqs_off_thunk+0x1a/0x1c
+[347243.148927]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[347243.148931] RIP: 0033:0x7f0d31373b97
+[347243.148935] Code: 73 01 c3 48 8b 0d f9 f2 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 4d 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d c9 f2 2c 00 f7 d8 64 89 01 48
+[347243.148938] RSP: 002b:00007ffe678d3268 EFLAGS: 00000202 ORIG_RAX: 000000000000004d
+[347243.148943] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f0d31373b97
+[347243.148945] RDX: 0000000000000000 RSI: 0000000000800000 RDI: 000000000000000d
+[347243.148948] RBP: 00007ffe678d33e0 R08: 7a617b47b15bbfd1 R09: 0000564fa50a4670
+[347243.148951] R10: 0000000000000000 R11: 0000000000000202 R12: 0000564fa6c2a880
+[347243.148953] R13: 00007ffe678d3320 R14: 00007ffe678d3380 R15: 00007ffe678d3840
+[347243.148958] FIX kmalloc-64: Restoring 0x000000003e024cae-0x00000000f155f746=0x6b
+
+[347243.149304] FIX kmalloc-64: Marking all objects used
+[347259.374097] Writes:  Total: 213414029191  Max/Min: 0/0   Fail: 0 
