@@ -1,0 +1,694 @@
+###############################################################################
+			Spring 2019 - CSE - 506  Operating Systems
+				Prof. Erez Zadok
+Authors: Aravind Reddy Ravula			Sagar Jeevan
+	 Samanvitha Reddy Panyam		Sriram Reddy Kalluri
+###############################################################################
+**********
+INTRODUCTION
+**********
+Understanding the impact of KHO and enhancing the bug report with as much 
+information as possible with KHO enabled.Out of several options which are 
+available, we have picked the options which span various segments and are
+realistic in our designs. For each and every option, we present with the 
+information regarding the option and how it can be triggered and the impact of
+the option. 
+**********************
+STEPS TO FOLLOW FOR INSTALLATION OF ALL MODULES
+**********************
+We have kept the config file for seperate modules inside each module folder.
+CSE-506/<module>/kernel.config
+Please use the following files for the new modules:
+arch/x86/entry/syscalls/syscall_64.tbl
+fs/open.c
+include/linux/syscalls.h
+
+In hw3-cse506g23 folder there is a kernel.config which is the base configuration
+[Without enabling any option].
+In each of the folders in CSE-506 there is a kernel.config file which has config 
+enabled for that particular option.
+
+Please reboot the kernel by installing the options with this kernel.config or the 
+folder with kernel files.
+
+Please run the following commands to run the kernel.
+make; make modules_install; make install;
+reboot
+*****************************************
+1) CONFIG_SLUB_DEBUG_ON & CONFIG_SLUB_STATS
+****************************************
+SLUB boots by default with the runtime debug capabilities switched off. Enabling
+this is equivalent to specifying the "slub_debug" parameter on boot. This option
+is used to enable the debugging of use-after-free(Poison overwritten) and double
+free. Whenever the debug function checks for this particular page, then it puts
+the bug in dmesg. 
+
+Please find the below files which are important to understand the source code of
+this option. 
+mm/slub.c
+Documentation/vm/slub.rst
+
+I have enabled this option in "CSE-506/poison/kernel.config".
+Please reboot the kernel by installing the options with this kernel.config in 
+"" or the folder with kernel files.
+Please run the following commands to run the kernel.
+make; make modules_install; make install;
+reboot
+
+Please use this config file for analysing this option.
+Since this option is used for debugging the two main bugs i.e "Double freeing 
+the pointer" and "Use after free", I have designed a module "posion" such that
+it can parameters from the user i.e d for double freeing and p for poison 
+overwritten. 
+
+*********
+WALK THROUGH THE KERNEL CODE
+Double freeing:
+As the name suggests, it allocates the memory and free the memory twice. 
+Use after free:
+It allocates and frees the memory. Then it tries to perform memcpy on the freed
+pointer.
+
+INSERTING THE MODULE:
+Please run the following command for installing the module in CSE-506/poison:
+sh install_modules.sh
+For checking the double free option, please run the following command
+./user_poison d
+For checking the poison overwritten option, please run the following command
+./user_poison p
+*************
+Without using this option, dmesg looks like:
+Kernel panics if you are not using this code as it is a buggy code and you 
+can't figure out the type of bug. 
+
+[  +0.000176] CPU: 1 PID: 4055 Comm: pickup Tainted: G           O      4.20.6+ #20
+[  +0.000238] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  +0.000334] RIP: 0010:kmem_cache_alloc_trace+0xc4/0x220
+There is no useful information.
+
+With using this option, dmesg looks like:
+Double freeing the pointer
+[  +0.000010] =============================================================================
+[  +0.000363] BUG kmalloc-64 (Tainted: G    B      O     ): Object already free
+[  +0.000283] -----------------------------------------------------------------------------
+
+[  +0.000371] INFO: Allocated in poison+0x80/0x1a0 [sys_poison] age=1 cpu=1 pid=20478
+
+Inside mm/slub.c, the functions such as free_debug_processing, 
+free_consistency_checks, on_free_list are triggered to get this dmesg.
+
+Poison Overwritten
+[May 9 20:48] =============================================================================
+[  +0.000348] BUG kmalloc-64 (Tainted: G    B      O     ): Poison overwritten
+[  +0.000263] -----------------------------------------------------------------------------
+
+[  +0.000363] INFO: 0x000000007da3e8cd-0x000000007f997515. First byte 0x63 instead of 0x6b
+
+Inside mm/slub.c, the functions such as alloc_consistency_checks, check_object 
+and check_bytes_and_report are triggered to get this dmesg
+Since it is going through these functions, it will take some time to reflect the
+useful information in dmesg and you can expect the output in dmesg in 20s.
+Please find the complete log files without option and with option below for 
+these cases respectively. 
+
+CSE-506/poison/log/log_with_option_double_freeing
+CSE-506/poison/log/log_with_option_poison_overwritten
+CSE-506/poison/log/log_without_option_double_freeing
+CSE-506/poison/log/log_without_option_poison_overwritten
+****************************
+2) CONFIG_DEBUG_ATOMIC_SLEEP
+****************************
+If you enable this option, various routines which may sleep will become very 
+noisy if they are called inside atomic sections: when a spinlock is held, 
+inside an rcu read side critical section, inside preempt disabled sections, 
+inside an interrupt, etc...
+
+Please use the config file CSE-506/atomic/kernel.config in which this option is 
+enabled and perform make and reboot as discussed at the beginning of the 
+document.
+
+WALK THROUGH THE CODE:
+I have triggered this bug by using kmalloc and kfree 2 times after acquiring a 
+spinlock, Since spinlocks are meant to run fast operations, it's not intended to 
+use kmalloc which is time intended operation and this is triggering the bug.
+ 
+To understand more about this option, please go through the source code in the
+following file.
+kernel/sched/core.c
+In the above file, it is calling the functions "__might_sleep" and "___might_sleep"
+to trigger the bug.
+
+INSERTING THE MODULE:
+Please run the following command for installing the module in CSE-506/atomic:
+sh install_modules.sh
+For checking the double free option, please run the following command
+./user_atomic
+
+Please find the dmesg below:
+without option:
+[May10 23:36] spin lock atomicity corruption 1 and pointer 00000000ba15d69b
+[  +1.000262] spin lock atomicity corruption 0 and pointer 00000000ba15d69b
+
+with option:
+[  996.425881] BUG: sleeping function called from invalid context at mm/slab.h:421
+[  996.426256] in_atomic(): 1, irqs_disabled(): 0, pid: 5664, name: user_atomic
+
+This is intended as the option code is correctly checking for this.
+
+Please find the log file with and without option below:
+CSE-506/atomic/log/log_with_option
+CSE-506/atomic/log/log_without_option
+
+*******************************
+3) CONFIG_SCHED_STACK_END_CHECK
+*******************************
+One 'long int' at the bottom of the thread stack is reserved and should not be 
+poisoned.
+task_stack_end_corrupted
+
+To understand more about this option, please go through the following files.
+kernel/sched/core.c
+kernel/stackleak.c
+
+For each and every task_struct structure, there is a parameter void *stack.
+Inside "kernel/sched/core.c", task_stack_end_corrupted function is enabled. 
+This function is checking whether the value pointed by the stack of the  
+task_struct is not equal to STACK_END_MAGIC. If it is not equal to this magic
+number, then it triggers the kernel panic "corrupted stack end is detected 
+inside scheduler".
+
+Please use the config file CSE-506/stack_sched/kernel.config in which this option is 
+enabled and perform make and reboot as discussed at the beginning of the 
+document.
+
+
+WALK THROUGH THE KERNEL CODE:
+I have trigerred this bug by updating the value of current->stack. 
+"current" is of type task_struct and it is equal to the STACK_END_MAGIC. So, by 
+updating the value of stack of the "current", it panics the kernel.
+
+INSERTING THE MODULE:
+Please run the following command for installing the module in 
+CSE-506/stack_sched:
+sh install_modules.sh
+For checking the double free option, please run the following command
+./user_stack_sched
+
+OUTPUT:
+Rebooting the kernel by enabling this option and updating the stack parameter, 
+I get the error "corrupted stack end detected inside scheduler" on the command
+line and the kernel panics. If you are not using this option, kernel wont 
+recognize the bug and didn't panic and may effect later. 
+
+Please find the log without enabling the option:
+CSE-506/stack_sched/log/log_without_option
+[May10 23:31] Current stack 00000000f5433af8
+[  +0.000008] address of the pointer 00000000f5433af8
+[  +0.000006] Current stack value 1470918301
+[  +0.000004] Current stack value 1470918331
+
+Even the stack value got updated, it is not catching this bug. 
+If you enable this option, it will panic the kernel and prints the following 
+message:
+"corrupted stack end detected inside scheduler"
+***********************
+4) CONFIG_PROVE_LOCKING
+***********************
+If this option is enabled, any bug that is related to deadlock is reported
+before they actually occur. This also ensures that any locking that occurs is
+mathematically correct. Technically this feature checks if any arbitrary
+combination of locking sequences (on an arbitrary number of CPUs, running an
+arbitrary number of tasks and interrupt contexts) cause a deadlock.
+
+.config file location: CSE-506/self_deadlock/kernel.config
+
+Bug Name
+--------
+Self Deadlock
+
+Explanation
+-----------
+After the user program invokes this kernel module, a function is called where
+the bug exist. A spinlock is initialised as below,
+
+static spinlock_t my_lock = __SPIN_LOCK_UNLOCKED();
+
+The process then grabs the lock and then executes something. Soon after
+executing the operation, the process tries to grab the same lock again. This
+results in the process waiting forever because the lock is held by itself and
+has not been unlocked.
+
+To understand more about this option, please go through the source code in the
+following file: kernel/locking/lockdep.c
+
+INSERTING THE MODULE
+--------------------
+Please run the following command for installing the module in
+CSE-506/self_deadlock:
+sh install_modules.sh
+For checking the self-deadlock option, please run the following command
+./user_selfdeadlock
+
+OUTPUT
+------
+Rebooting the kernel by enabling this option and running the aove command, I
+get the error "possible recursive locking detected" and " *** DEADLOCK *** "
+and on the command line and the kernel panics. If you are not using this
+option, kernel wont recognize the bug.
+
+[  219.681916] ============================================
+[  219.682102] WARNING: possible recursive locking detected
+[  219.682291] 4.20.6+ #6 Tainted: G           O
+[  219.682461] --------------------------------------------
+
+[  219.683773]  Possible unsafe locking scenario:
+
+[  219.683977]  CPU0
+[  219.684087]  ----
+[  219.684282]  lock();
+[  219.684434]  lock();
+
+**************************
+5) CONFIG_DEBUG_LOCK_ALLOC
+**************************
+This feature will check whether any held lock (spinlock, rwlock, mutex, or
+rwsem) is incorrectly freed by the kernel, whether a live lock  is incorrectly
+reinitialized via spin_lock_init()/mutex_init()/etc., or whether there is any
+lock held during task exit.
+
+.config file location: CSE-506/atomic/kernel.config
+
+Bug Name
+--------
+Exit Task with Live Lock
+
+Explanation
+-----------
+After the user program invokes this kernel module, a function is called where
+the bug exist. A spinlock is initialised as below,
+
+static spinlock_t my_lock = __SPIN_LOCK_UNLOCKED();
+
+The process then grabs the lock and then executes something. Soon after
+executing the operation, the process just executes the rest of the program without
+unlocking it. This results in a scenario where a live lock exist during task exit,
+hence the bug.
+
+To understand more about this option, please go through the source code in the
+following file: kernel/locking/lockdep.c
+
+INSERTING THE MODULE
+--------------------
+Please run the following command for installing the module in
+CSE-506/live_lock:
+sh install_modules.sh
+For checking the self-deadlock option, please run the following command
+./user_livelock
+
+OUTPUT
+------
+Rebooting the kernel by enabling this option and running the aove command, I
+get the error "WARNING: lock held when returning to user space!" and
+"user_lockorder/9228 is leaving the kernel with locks still held!" on the
+command line. If you are not using this option, kernel wont recognize the bug.
+
+[ 3877.066723] ================================================
+[ 3877.066928] WARNING: lock held when returning to user space!
+[ 3877.067140] 4.20.6+ #5 Tainted: G           O
+[ 3877.067318] ------------------------------------------------
+[ 3877.067520] user_lockorder/9228 is leaving the kernel with locks still held!
+[ 3877.067763] 1 lock held by user_lockorder/9228:
+[ 3877.067944]  #0: 00000000f51da1ff (){+.+.}, at: lockorder+0xc/0xf [sys_lockorder]
+
+************************
+6) CONFIG_DEBUG_KMEMLEAK
+************************
+This option is enabled to detect any possible kernel memory leaks. 
+To understand more about this option, please go through the following files.
+linux/mm/kmemleak.c
+linux/kmemleak.h
+
+Since kmemleak is enabled from the beginning of the boot, the default log size 
+i.e., 400 will not be sufficient enough for it to capture the memory leaks that 
+occur later on when the program is executed. For this purpose, we have increased 
+the buffer size from 400 to 4096. It can be set to any larger number. The leaks 
+are reported via /sys/kernel/debug/kmemleak. Default time period for scanning 
+the memory is every 10 minutes. However, ignorer to trigger an immediate scan, 
+we can execute the following command.
+"echo scan > /sys/kernel/debug/kmemleak"
+
+This might not show the results right away but after few seconds, the details 
+of all the possible memory leaks will be stored in /sys/kernel/debug/kmemleak.
+They can be viewed via the following command.
+
+"cat /sys/kernel/debug/kmemleak"
+
+WALK THROUGH THE KERNEL CODE:
+I have allocated kernel memory of size 8 to a character buffer and ended the 
+program without freeing the allocated memory. This gives us a memory leak.
+
+
+OUTPUT:
+I get the error of unreferenced object in the kmemleak report that is generated
+on enabling the debug option. When the option is not enabled, kmemleak module 
+itself is nit built.bHence, there will be no report.
+Error:
+unreferenced object 0xffff9cfd74a77918 (size 8):
+  comm "user_memleaking", pid 14280, jiffies 4303963079 (age 139.685s)
+  hex dump (first 8 bytes):
+    20 79 a7 74 fd 9c ff ff                           y.t....
+  backtrace:
+    [<00000000b5ce0fd9>] do_syscall_64+0x7b/0x37d
+    [<00000000b7c47ea8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    [<00000000b0456f0e>] 0xffffffffffffffff
+
+************************
+7) CONFIG_REFCOUNT_FULL
+************************
+This option enables to perform full reference count validation and checks.
+To understand more about this option, please go through the following files.
+linux/refcount.h
+linux/drivers/misc/lkdtm/refcount.c
+
+
+WALK THROUGH THE KERNEL CODE:
+I have defined a max variable with the value of (UINT_MAX - 1). I have assigned
+it to the refcount_t structure and incremented its value twice due to which, it
+throws the overflow error.  
+
+OUTPUT:
+Without the option, it doesn't throw any error. When the option is enabled, it
+throws the reference count leak error.
+
+[  +2.202706] ------------[ cut here ]------------
+[  +0.000001] refcount_t: saturated; leaking memory.
+[  +0.000041] WARNING: CPU: 0 PID: 11778 at lib/refcount.c:133 refcount_inc_not
+_zero_checked+0x44/0x60
+[  +0.000000] Modules linked in: sys_referencecount(OE) sys_sgdebugging(OE) sg 
+sr_mod cdrom sd_mod crc32c_intel ata_generic pata_acpi floppy ata_piix libata 
+mptspi scsi_transport_spi mptscsih mptbase autofs4 [last unloaded: sys_
+referencecount]
+[  +0.000009] CPU: 0 PID: 11778 Comm: user_referencec Tainted: G           OE  
+   4.20.6+ #3
+[  +0.000001] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop 
+Reference Platform, BIOS 6.00 09/21/2015
+[  +0.000002] RIP: 0010:refcount_inc_not_zero_checked+0x44/0x60
+[  +0.000001] Code: ff 74 09 b8 01 00 00 00 c3 31 c0 c3 80 3d 54 ab bb 00 00 75 
+ee 48 c7 c7 60 a4 be b7 31 c0 c6 05 42 ab bb 00 01 e8 bc b5 d6 ff <0f> 0b eb d5 
+85 c0 74 d7 89 c2 83 c2 01 75 ba eb c8 90 66 2e 0f 1f
+
+*********************
+8) CONFIG_DEBUG_SG
+*********************
+
+This option turns on checks for scatter-gather tables. It helps in finding the
+problems where the sg tables are not properly initialized or set.
+To understand more about this option, please go through the following files.
+linux/scatterlist.h
+
+
+WALK THROUGH THE KERNEL CODE:
+The kernel address starts from 0xC0000000 and go to 0xFFFFFFFF. Here after 
+initializing the scatter-gather table, while setting the buffer to a sg entry,
+I am passing the invalid kernel address space. I am doing so by subtracting 
+0x01 from 0xC0000000 which is not a valid kernel address. This functionality 
+throws the error.
+
+OUTPUT:
+
+Without the option, it doesn't throw any error. When the option is enabled, it 
+throws the following error:
+[  +7.997082] ------------[ cut here ]------------
+[  +0.000006] kernel BUG at ./include/linux/scatterlist.h:143!
+[  +0.000346] invalid opcode: 0000 [#1] SMP PTI
+[  +0.000164] CPU: 0 PID: 6292 Comm: user_sgdebuggin Tainted: G           OE
+     4.20.6+ #4
+[  +0.000278] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop 
+Reference Platform, BIOS 6.00 09/21/2015
+[  +0.000342] RIP: 0010:sgdebugging+0x60/0x62 [sys_sgdebugging]
+[  +0.000191] Code: 48 8b 04 24 75 22 a8 01 75 1c 31 c0 48 8b 54 24 60 65 48 
+33 14 25 28 00 00 00 75 05 48 83 c4 68 c3 e8 d4 80 25 fc 0f 0b 0f 0b <0f> 0b 
+48 83 3d ae 14 5c fd 00 74 0b 48 c7 05 a1 14 5c fd 00 00 00
+
+#####################################
+########9. CONFIG_DEBUG_LIST#########
+#####################################
+Enable this to turn on extended checks  in the linked-list walking routines for
+example list_add, list_del functions.
+
+WHAT AND HOW IT GETS CORRUPTED?
+Considering the code for list_add function. The kernel code for this function is
+in linux/list.h and lib/list_debug.c. If this configuration is enabled special
+function __list_add_valid is called to check the validity of list. Otherwise
+__list_add_valid will return true in all the cases.
+
+if (CHECK_DATA_CORRUPTION(next == LIST_POISON1,
+                        "list_del corruption, %px->next is LIST_POISON1 (%px)\n",
+                        entry, LIST_POISON1))
+if (CHECK_DATA_CORRUPTION(next->prev != prev,
+                        "list_add corruption. next->prev should be prev (%px),
+                        but was %px. (next=%px).\n",
+                        prev, next->prev, next)
+These are the check which prints the corruption details in dmesg.
+
+HOW TO REPRODUCE?
+To reproduce the bug I have created a linked list and added a node to it. Then
+I deleted the same node. If I try to delete the same node twice it is an exploit
+attempt to delete the node which is not already deleted.
+
+The other way to corrupt linked list is to create a list with 3 nodes say
+                1<->2<->3
+Modify the list so that the next of 2 points to 1 and now try to insert a node
+between 2 and 3. This also corrupts the linked list.
+
+HOW TO RUN?
+A kernel module sys_linkedlist is created to reproduce this bug. Following are
+the steps to reproduce it.
+From folder /usr/src/hw3-CSE506g23/linkedlist run the following commands:
+
+sh install_modules.sh
+./user_linkedlist
+
+DMESG BEFORE AND AFTER ENABLING OPTION
+BEFORE
+If the option is not enabled it doesn't show clearly why the problem has occured. 
+It just shows that the linked list is corrupted.
+[  796.160442] installed linkedlist module!
+[  799.607029] Inside linkedlist_module
+[  799.607109] general protection fault: 0000 [#1] SMP PTI
+[  799.607444] CPU: 0 PID: 5984 Comm: user_linkedlist Tainted: G           OEL    
+4.20.6+ #3
+[  799.607708] Hardware name: VMware, Inc. VMware Virtual Platform/440BX 
+Desktop Reference Platform, BIOS 6.00 09/21/2015
+[  799.608044] RIP: 0010:corrupted_linkedlist+0x5a/0xa0 [sys_linkedlist]
+
+AFTER
+If the option is enabled it shows that the linked list is corrupted because of
+the deletion
+[  142.913975] sys_linkedlist: loading out-of-tree module taints kernel.
+[  142.915271] installed linkedlist module!
+[  147.315994] Inside linkedlist
+[  147.316005] ------------[ cut here ]------------
+[  147.316009] list_del corruption, ffff9d6ef2ef38e8->next is LIST_POISON1 (dea
+d000000000100)
+[  147.316089] WARNING: CPU: 1 PID: 5220 at lib/list_debug.c:47 __list_del_entr
+y_valid+0x50/0xa0
+[  147.316091] Modules linked in: sys_linkedlist(O) sg sr_mod cdrom sd_mod crc3
+2c_intel floppy ata_generic pata_acpi ata_piix mptspi scsi_transport_spi libata
+ mptscsih mptbase autofs4
+
+LOGS
+The full logs for this config are available at
+/usr/src/hw3-cse506g23/CSE-506/linkedlist/log
+########################################
+######10. CONFIG_PROVE_LOCKING##########
+########################################
+This feature enables the kernel to prove that all locking that occurs in the
+kernel runtime is mathematically correct: that under no circumstance could be 
+arbitrary combination of observed locking sequences cause a deadlock.
+
+HOW TO REPRODUCE?
+In this demo, I used two mutexes and two threads where the ordering of locking 
+is different in different threads. The locking pattern is as follows:
+Thread 1: Grabs lock on mutex 1 and then  sleeps for 5 seconds after which it 
+grabs lock on mutex 2. 
+Thread 2: Grabs lock on mutex 2 and then sleeps for 5 seconds after which it
+grabs lock on mutex 1. 
+But the thread 1 is holding lock on mutex 1 and thread 2 is holding lock on 
+mutex 2. So they will be waiting for each other for the other lock which causes
+the deadlock scenario.
+
+HOW TO RUN?
+A kernel module sys_mutex is created to reproduce the bug. Following are the
+steps to reproduce it. 
+From folder /usr/src/hw3-CSE506g23/mutex run the following commands:
+sh install_modules.sh
+./user_mutex
+
+DMESG BEFORE AND AFTER ENABLING OPTION
+BEFORE
+There will be no logs generated if the option is not enabled and the system will
+just hang as it reaches deadlock no thread can acquire the lock and move forward.
+AFTER
+If the option is enabled it shows a clear message that which thread held lock on 
+which mutex and shows the ordering of locking. This helps in understanding the 
+bug easily. 
+
+[  190.734663] ======================================================
+[  190.734809] WARNING: possible circular locking dependency detected
+[  190.734957] 4.20.6+ #1 Tainted: G           OE
+[  190.735076] ------------------------------------------------------
+[  190.735222] thread1/4924 is trying to acquire lock:
+[  190.735344] 000000003cdf0b8d (lock_2){+.+.}, at: thread_function1+0x34/0x70 
+[sys_mutex]
+[  190.735538]
+but task is already holding lock:
+[  190.735675] 000000000061f264 (lock_1){+.+.}, at: thread_function1+0xe/0x70
+[sys_mutex]
+[  190.735859]
+which lock already depends on the new lock.
+
+[  190.736038]
+the existing dependency chain (in reverse order) is:
+[  190.736205]
+-> #1 (lock_1){+.+.}:
+[  190.736426]        thread_function2+0x34/0x70 [sys_mutex]
+[  190.736619]        kthread+0xf3/0x130
+[  190.736730]        ret_from_fork+0x3a/0x50
+[  190.736843]
+-> #0 (lock_2){+.+.}:
+[  190.736975]        __mutex_lock+0x5c/0x830
+[  190.737088]        thread_function1+0x34/0x70 [sys_mutex]
+[  190.737226]        kthread+0xf3/0x130
+[  190.737331]        ret_from_fork+0x3a/0x50
+[  190.737442]
+other info that might help us debug this:
+
+[  190.737634]  Possible unsafe locking scenario:
+
+[  190.737783]        CPU0                    CPU1
+[  190.737902]        ----                    ----
+[  190.738021]   lock(lock_1);
+[  190.738109]                                lock(lock_2);
+[  190.738243]                                lock(lock_1);
+[  190.738377]   lock(lock_2);
+[  190.738464]
+ *** DEADLOCK ***
+
+LOGS
+The full logs for this config are available at
+/usr/src/hw3-cse506g23/CSE-506/mutex/log
+
+#################################################
+######## 10. CONFIG_SOFTLOCKUP_DETECTOR #########
+#################################################
+Softlockups are bugs that cause the kernel to loop in kernel mode for more than
+20 seconds, without giving other tasks a chance to run. The current stack trace
+is displayed upon detection and the system will stay locked up.
+
+WHAT AND HOW IT GETS CORRUPTED?
+The error on this comes from kernel/watchdog.c file from the following trace.
+pr_emerg("BUG: soft lockup - CPU#%d stuck for %us! [%s:%d]\n",
+			smp_processor_id(), duration,
+			current->comm, task_pid_nr(current));
+HOW TO REPRODUCE?
+Inorder to get this bug make the kernel loop in for more than 20sec. In this
+demo, I made the kernel loop for 40sec. The bug will be detected at ~23sec 
+because it is taking into considerating the run time of the user program as well.
+
+HOW TO RUN?
+A kernel module sys_softlockup is created to reproduce the bug. Following are 
+the steps to reproduce it.
+From folder /usr/src/hw3-CSE506g23/softlockup run the following commands:
+sh install_modules.sh
+./user_mutex
+
+DMESG BEFORE AND AFTER ENABLING OPTION
+BEFORE
+The program runs successfully for 40 seconds in my case and returns 0.
+AFTER
+If you run the syscall with the option enabled it gives the following dmesg
+[  270.035165] sys_softlockup: loading out-of-tree module taints kernel.
+[  270.036079] installed softlockup module!
+[  300.406483] watchdog: BUG: soft lockup - CPU#0 stuck for 22s! 
+[user_softlockup:4920]
+[  300.406793] Modules linked in: sys_softlockup(O) sg sr_mod cdrom sd_mod 
+crc32c_intel floppy ata_generic pata_acpi mptspi scsi_transport_spi mptscsih 
+mptbase ata_piix libata autofs4
+
+LOGS
+The full logs for this config are available at
+/usr/src/hw3-cse506g23/CSE-506/softlockup/log
+
+********************
+11) CONFIG_DETECT_HUNG_TASK
+********************
+If you enable this option, you can enable the kernel to detect "hung tasks", 
+which are bugs that cause the task to be stuck in uninterruptible state 
+indefinitely. It will print the current stack trace. 
+After enabling this option, by default it checks for time out of 120s. For 
+testing this option, we have changed the time out to 5s by setting the following
+option CONFIG_DEFAULT_HUNG_TASK_TIMEOUT to 5s.
+
+To understand more about this option, please go through the source code in the 
+following files
+include/linux/sched/sysctl.h
+include/linux/sched.h
+kernel/sysctl.c
+kernel/hung_task.c
+
+As per the source code of kernel/hung_task.c, this option is enabling the
+function check_hung_task which takes the parameters task_struct & timeout and
+validates whether the current task_struct is hung more than timeout set in
+CONFIG_DEFAULT_HUNG_TASK_TIMEOUT, it raises a warning in the dmesg.
+
+Please use the config file CSE-506/hung/kernel.config in which this option is 
+enabled and perform make and reboot as discussed at the beginning of the 
+document.
+
+WALK THROUGH KERNEL CODE:
+To generate useful information by enabling this bug, we have changed the 
+timeout to 5s and used msleep(20000) as the current task_struct is hung for 20s.
+
+INSERTING THE MODULE:
+Please run the following command for installing the module in 
+CSE-506/hung:
+sh install_modules.sh
+For checking the double free option, please run the following command
+./user_hung
+
+OUTPUT:
+It runs normally and no warning is raised in dmesg if you haven't enabled this 
+option.
+
+dmesg with option:
+[  313.430788] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  313.431026] user_hung       D    0  5659   4122 0x00000000
+[  313.431031] Call Trace:
+[  313.431043]  ? __schedule+0x20d/0x620
+[  313.431047]  ? __handle_mm_fault+0xa45/0xc10
+[  313.431050]  schedule+0x34/0x80
+[  313.431055]  schedule_timeout+0x1af/0x420
+[  313.431060]  ? collect_expired_timers+0xa0/0xa0
+
+Please find the log file with and without option below:
+CSE-506/hung/log/log_with_option
+CSE-506/hung/log/log_without_option
+
+
+###################################
+########## REFERENCES ##############
+####################################
+[1] https://www.kernel.org/doc/html/latest/dev-tools/kmemleak.html
+[2] https://bugzilla.redhat.com/show_bug.cgi?id=1201179
+[3] https://github.com/torvalds/linux/blob/6f0d349d922ba44e4348a17a78ea51b7135965b1/drivers/misc/lkdtm/refcount.c
+[4] https://lore.kernel.org/patchwork/patch/687725/
+[5] https://en.wikipedia.org/wiki/High_memory
+[6] https://cateee.net/lkddb/web-lkddb/DEBUG_SG.html
+[7] https://github.com/torvalds/linux/blob/dce45af5c2e9e85f22578f2f8065f225f5d11764/include/linux/scatterlist.h
+[8] https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1456952 
+[9] http://www.chizang.net/alex/2009/03/11/linux-slab-poisoning-101/
+[10] https://github.com/torvalds/linux/
+[11] https://elixir.bootlin.com/linux/v4.20.6/
+[12] https://www.blackmoreops.com/2014/09/22/linux-kernel-panic-issue-fix-hung_task_timeout_secs-blocked-120-seconds-problem/
+

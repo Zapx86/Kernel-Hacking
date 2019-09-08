@@ -1,0 +1,27 @@
+#include <linux/init.h>             
+#include <linux/module.h>          
+#include <linux/kernel.h>           
+#include <linux/slab.h>
+
+static void sample_fxn(void) 
+{
+	char sample[10];
+	
+	strcpy(sample, "000000000");
+	printk("%s\n", sample);
+}
+
+
+static int __init init_mod(void){
+	sample_fxn();
+	printk("installed new sample module!\n");
+	return 0;
+}
+
+static void __exit exit_mod(void){
+    printk("removed sample module!\n");
+}
+
+module_init(init_mod);
+module_exit(exit_mod);
+MODULE_LICENSE("GPL");
